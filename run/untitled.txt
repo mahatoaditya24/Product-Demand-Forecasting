@@ -1,0 +1,8 @@
+cd /d C:\Users\ADITYA\Flipkart_2
+streamlit run app.py
+
+
+Flipkart_2/data/inventory.db
+
+"C:\Users\ADITYA\Flipkart_2\data\inventory.db"
+"C:\Users\ADITYA\Flipkart_2\data\inventory.db"

@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Large data files and database binaries (>100MB exceeds GitHub limits)
+*.db
+*.sqlite
+*.sqlite3
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+Notebook/*.csv
+
+# Large archive / compressed files
+*.zip
+*.gz
+*.tar.gz
+model.zip
+compressed_data.csv.gz
+
+# Temporary / backup files
+*~*
+*.bak
+*.tmp
+run/untitled.txt
+Freight Cost Prediction~*
