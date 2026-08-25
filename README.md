@@ -1,5 +1,12 @@
 # 📦 Supply Chain & Vendor Invoice Intelligence System
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://mahatoaditya24-product-demand-forecasting-inferenceapp-mvyy16.streamlit.app/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/mahatoaditya24/Product-Demand-Forecasting)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> 🚀 **Live Interactive Demo**: [https://mahatoaditya24-product-demand-forecasting-inferenceapp-mvyy16.streamlit.app/](https://mahatoaditya24-product-demand-forecasting-inferenceapp-mvyy16.streamlit.app/)
+
 An end-to-end enterprise machine learning system and interactive analytics portal for e-commerce and retail supply chain operations (inspired by large-scale logistics ecosystems like Flipkart and Walmart).
 
 The system addresses three core operational bottlenecks:
