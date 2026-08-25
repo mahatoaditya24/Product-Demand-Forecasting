@@ -1,9 +1,17 @@
 import datetime
+import io
 import pandas as pd
 import streamlit as st
 
 from Predict_freight import predict_freight_cost
-from predict_demand import prepare_demand_features, predict_product_demand, WAREHOUSES, CATEGORIES
+from predict_demand import (
+    prepare_demand_features,
+    predict_product_demand,
+    predict_batch_demand,
+    generate_sample_batch_csv,
+    WAREHOUSES,
+    CATEGORIES
+)
 from predict_invoice_flag import predict_invoice_flag
 
 # -------------------------------
@@ -205,107 +213,162 @@ else:
     st.header("📊 Product Demand Forecasting")
     st.write("Predict future order demand for specific SKUs across regional warehouses using historical trends and cyclical patterns.")
 
-    with st.form("demand_form"):
-        col1, col2, col3 = st.columns(3)
+    tab1, tab2 = st.tabs(["🎯 Single SKU Forecast", "📁 Batch CSV Forecast & Download"])
 
-        with col1:
-            product_code = st.text_input(
-                "Product SKU Code",
-                value="Product_0993"
-            )
-            warehouse = st.selectbox(
-                "Regional Warehouse",
-                options=WAREHOUSES,
-                index=2  # Whse_J
-            )
+    with tab1:
+        with st.form("demand_form"):
+            col1, col2, col3 = st.columns(3)
 
-        with col2:
-            product_category = st.selectbox(
-                "Product Category",
-                options=CATEGORIES,
-                index=27  # Category_028
-            )
-            forecast_date = st.date_input(
-                "Forecast Target Date",
-                value=datetime.date.today()
-            )
+            with col1:
+                product_code = st.text_input(
+                    "Product SKU Code",
+                    value="Product_0993"
+                )
+                warehouse = st.selectbox(
+                    "Regional Warehouse",
+                    options=WAREHOUSES,
+                    index=2  # Whse_J
+                )
 
-        with col3:
-            lag_1 = st.number_input(
-                "Yesterday's Order Demand (Lag 1)",
-                min_value=0.0,
-                value=500.0,
-                step=50.0
-            )
-            lag_7 = st.number_input(
-                "7-Day Prior Demand (Lag 7)",
-                min_value=0.0,
-                value=480.0,
-                step=50.0
-            )
+            with col2:
+                product_category = st.selectbox(
+                    "Product Category",
+                    options=CATEGORIES,
+                    index=27  # Category_028
+                )
+                forecast_date = st.date_input(
+                    "Forecast Target Date",
+                    value=datetime.date.today()
+                )
 
-        col4, col5, col6 = st.columns(3)
-        with col4:
-            lag_30 = st.number_input(
-                "30-Day Prior Demand (Lag 30)",
-                min_value=0.0,
-                value=450.0,
-                step=50.0
-            )
-        with col5:
-            rolling_mean_7 = st.number_input(
-                "7-Day Rolling Mean Demand",
-                min_value=0.0,
-                value=490.0,
-                step=25.0
-            )
-        with col6:
-            rolling_std_7 = st.number_input(
-                "7-Day Rolling Standard Deviation",
-                min_value=0.0,
-                value=45.0,
-                step=5.0
-            )
+            with col3:
+                lag_1 = st.number_input(
+                    "Yesterday's Order Demand (Lag 1)",
+                    min_value=0.0,
+                    value=500.0,
+                    step=50.0
+                )
+                lag_7 = st.number_input(
+                    "7-Day Prior Demand (Lag 7)",
+                    min_value=0.0,
+                    value=480.0,
+                    step=50.0
+                )
 
-        submit = st.form_submit_button("📈 Forecast Product Demand", use_container_width=True)
+            col4, col5, col6 = st.columns(3)
+            with col4:
+                lag_30 = st.number_input(
+                    "30-Day Prior Demand (Lag 30)",
+                    min_value=0.0,
+                    value=450.0,
+                    step=50.0
+                )
+            with col5:
+                rolling_mean_7 = st.number_input(
+                    "7-Day Rolling Mean Demand",
+                    min_value=0.0,
+                    value=490.0,
+                    step=25.0
+                )
+            with col6:
+                rolling_std_7 = st.number_input(
+                    "7-Day Rolling Standard Deviation",
+                    min_value=0.0,
+                    value=45.0,
+                    step=5.0
+                )
 
-    if submit:
-        features_df = prepare_demand_features(
-            product_code=product_code,
-            warehouse=warehouse,
-            product_category=product_category,
-            forecast_date=forecast_date,
-            lag_1=lag_1,
-            lag_7=lag_7,
-            lag_30=lag_30,
-            rolling_mean_7=rolling_mean_7,
-            rolling_std_7=rolling_std_7
-        )
+            submit = st.form_submit_button("📈 Forecast Product Demand", use_container_width=True)
 
-        predicted_units = predict_product_demand(features_df)
-
-        st.success("✅ Forecast Generated Successfully!")
-
-        col_d1, col_d2, col_d3 = st.columns(3)
-        with col_d1:
-            st.metric(
-                label="Predicted Order Demand",
-                value=f"{predicted_units:,.0f} units"
-            )
-        with col_d2:
-            demand_delta = predicted_units - rolling_mean_7
-            st.metric(
-                label="Expected Trend vs 7-Day Average",
-                value=f"{'+' if demand_delta >= 0 else ''}{demand_delta:,.0f} units",
-                delta=f"{demand_delta:,.0f} units"
-            )
-        with col_d3:
-            # Safety stock buffer recommendation
-            recommended_stock = int(predicted_units + (1.65 * rolling_std_7))
-            st.metric(
-                label="Recommended Inventory Stock",
-                value=f"{recommended_stock:,.0f} units"
+        if submit:
+            features_df = prepare_demand_features(
+                product_code=product_code,
+                warehouse=warehouse,
+                product_category=product_category,
+                forecast_date=forecast_date,
+                lag_1=lag_1,
+                lag_7=lag_7,
+                lag_30=lag_30,
+                rolling_mean_7=rolling_mean_7,
+                rolling_std_7=rolling_std_7
             )
 
-        st.subheader("Model Input Features")
-        st.dataframe(features_df, use_container_width=True)
+            predicted_units = predict_product_demand(features_df)
+
+            st.success("✅ Forecast Generated Successfully!")
+
+            col_d1, col_d2, col_d3 = st.columns(3)
+            with col_d1:
+                st.metric(
+                    label="Predicted Order Demand",
+                    value=f"{predicted_units:,.0f} units"
+                )
+            with col_d2:
+                demand_delta = predicted_units - rolling_mean_7
+                st.metric(
+                    label="Expected Trend vs 7-Day Average",
+                    value=f"{'+' if demand_delta >= 0 else ''}{demand_delta:,.0f} units",
+                    delta=f"{demand_delta:,.0f} units"
+                )
+            with col_d3:
+                # Safety stock buffer recommendation (Z=1.65 for 95% service level)
+                recommended_stock = int(predicted_units + (1.65 * rolling_std_7))
+                st.metric(
+                    label="Recommended Inventory Stock",
+                    value=f"{recommended_stock:,.0f} units"
+                )
+
+            st.subheader("Model Input Features")
+            st.dataframe(features_df, use_container_width=True)
+
+    with tab2:
+        st.subheader("📁 Bulk SKU Demand Forecasting")
+        st.write("Upload a CSV file containing multiple SKUs and historical sales to forecast demand across your entire inventory in seconds.")
+
+        # Download Sample Template
+        sample_df = generate_sample_batch_csv()
+        csv_buffer = io.StringIO()
+        sample_df.to_csv(csv_buffer, index=False)
+
+        col_b1, col_b2 = st.columns([1, 2])
+        with col_b1:
+            st.download_button(
+                label="📥 Download Sample CSV Template",
+                data=csv_buffer.getvalue(),
+                file_name="sample_demand_forecast_template.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
+
+        uploaded_file = st.file_uploader("Upload CSV for Bulk Forecasting", type=["csv"])
+
+        if uploaded_file is not None:
+            input_batch_df = pd.read_csv(uploaded_file)
+            st.write("Uploaded Data Preview:")
+            st.dataframe(input_batch_df.head(10), use_container_width=True)
+
+            if st.button("🚀 Generate Batch Forecasts", use_container_width=True):
+                with st.spinner("Calculating demand forecasts across all SKUs..."):
+                    forecasted_batch_df = predict_batch_demand(input_batch_df)
+
+                st.success(f"✅ Successfully generated forecasts for {len(forecasted_batch_df)} SKUs!")
+
+                # Display Visual Chart
+                st.subheader("📊 Forecasted Demand by SKU")
+                chart_data = forecasted_batch_df[["Product_Code", "Predicted_Order_Demand"]].set_index("Product_Code")
+                st.bar_chart(chart_data)
+
+                # Display Table
+                st.subheader("📋 Forecasted Results & Recommendations")
+                st.dataframe(forecasted_batch_df, use_container_width=True)
+
+                # Download Results Button
+                out_buffer = io.StringIO()
+                forecasted_batch_df.to_csv(out_buffer, index=False)
+                st.download_button(
+                    label="💾 Download Forecasted Predictions CSV",
+                    data=out_buffer.getvalue(),
+                    file_name="forecasted_product_demand_results.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )

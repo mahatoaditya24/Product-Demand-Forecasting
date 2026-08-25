@@ -1,6 +1,7 @@
 # 📦 Supply Chain & Vendor Invoice Intelligence System
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://mahatoaditya24-product-demand-forecasting-inferenceapp-mvyy16.streamlit.app/)
+[![CI Tests](https://github.com/mahatoaditya24/Product-Demand-Forecasting/actions/workflows/ci.yml/badge.svg)](https://github.com/mahatoaditya24/Product-Demand-Forecasting/actions)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/mahatoaditya24/Product-Demand-Forecasting)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
