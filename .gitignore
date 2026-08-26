@@ -5,12 +5,16 @@ __pycache__/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
+.pytest_cache/
 
 # Virtual Environments
 venv/
 .venv/
 env/
 ENV/
+
+# Nested repositories
+mobility-analytics-repo/
 
 # OS generated files
 .DS_Store

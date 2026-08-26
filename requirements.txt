@@ -1,9 +1,21 @@
+# Web Dashboard & Visualizations
 streamlit>=1.30.0
+plotly>=5.20.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# REST API Serving
+fastapi>=0.111.0
+uvicorn>=0.30.0
+pydantic>=2.7.0
+
+# Machine Learning & Data Processing
 pandas>=2.0.0
 numpy>=1.24.0
 scikit-learn>=1.3.0
 xgboost>=2.0.0
 joblib>=1.3.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
+
+# Testing & Quality
 pytest>=7.0.0
+flake8>=7.0.0
