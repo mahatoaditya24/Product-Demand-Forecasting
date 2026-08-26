@@ -4,11 +4,6 @@ plotly>=5.20.0
 matplotlib>=3.7.0
 seaborn>=0.12.0
 
-# REST API Serving
-fastapi>=0.111.0
-uvicorn>=0.30.0
-pydantic>=2.7.0
-
 # Machine Learning & Data Processing
 pandas>=2.0.0
 numpy>=1.24.0

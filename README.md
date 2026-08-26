@@ -2,11 +2,10 @@
 
 # 📦 Supply Chain & Vendor Invoice Intelligence System
 
-### *Enterprise Machine Learning & Microservice Serving Platform for Freight Estimation, Invoice Audit Risk Flagging, and Multi-Warehouse SKU Demand Forecasting*
+### *Enterprise Machine Learning Platform for Freight Estimation, Invoice Audit Risk Flagging, and Multi-Warehouse SKU Demand Forecasting*
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://mahatoaditya24-product-demand-forecasting-inferenceapp-mvyy16.streamlit.app/)
 [![CI Tests](https://github.com/mahatoaditya24/Product-Demand-Forecasting/actions/workflows/ci.yml/badge.svg)](https://github.com/mahatoaditya24/Product-Demand-Forecasting/actions)
-[![FastAPI](https://img.shields.io/badge/FastAPI-REST_Microservice-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
@@ -36,16 +35,14 @@ This platform implements an enterprise machine learning system addressing **thre
 
 ```mermaid
 flowchart TD
-    subgraph ClientLayer ["1. Client & Ingestion Interfaces"]
+    subgraph ClientLayer ["1. Interactive Portal Layer"]
         U["End Users / Operators"] -->|Web UI| UI["Streamlit Interactive Portal\n(:8501)"]
-        SYS["External ERP / SAP"] -->|HTTP REST| API["FastAPI Serving Microservice\nSwagger UI @ :8000/docs"]
     end
 
-    subgraph ServingLayer ["2. API & Feature Engineering Layer"]
-        API --> V["Pydantic Data Contract\nValidation Engine"]
-        V --> F1["Freight Feature Pipeline\n(Qty, Dollars)"]
-        V --> F2["Invoice Variance Engine\n(PO vs Invoice Deltas, Delays)"]
-        V --> F3["Temporal Feature Engine\n(Lags, Cycles, Rolling Means)"]
+    subgraph ServingLayer ["2. Feature Engineering Layer"]
+        UI --> F1["Freight Feature Pipeline\n(Qty, Dollars)"]
+        UI --> F2["Invoice Variance Engine\n(PO vs Invoice Deltas, Delays)"]
+        UI --> F3["Temporal Feature Engine\n(Lags, Cycles, Rolling Means)"]
     end
 
     subgraph ModelLayer ["3. Machine Learning Inference Layer"]
@@ -93,21 +90,6 @@ flowchart TD
 
 ---
 
-## ⚡ FastAPI REST Microservice Endpoints
-
-Interactive Swagger UI available at `http://localhost:8000/docs`:
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/health` | Service health status and model availability check |
-| `GET` | `/api/v1/metadata/warehouses` | List of regional warehouses and available categories |
-| `POST` | `/api/v1/predict/freight` | Forecast freight logistics costs from quantity & invoice value |
-| `POST` | `/api/v1/predict/invoice-risk` | Audit vendor invoice against PO lines for payment approval |
-| `POST` | `/api/v1/predict/demand` | Single SKU demand prediction and 95% safety stock sizing |
-| `POST` | `/api/v1/predict/demand/batch` | High-throughput batch demand forecasting across multiple SKUs |
-
----
-
 ## 💻 Interactive Streamlit Portal
 
 The web portal provides a multi-page interface to interact with all three models in real time:
@@ -126,12 +108,11 @@ streamlit run streamlit_app.py
 
 ## 🐳 Docker Deployment & Setup
 
-### 1. Run with Docker Compose (FastAPI + Streamlit)
+### 1. Run with Docker Compose
 ```bash
 docker compose up --build -d
 ```
 - **Streamlit Web Portal:** `http://localhost:8501`
-- **FastAPI Swagger Docs:** `http://localhost:8000/docs`
 
 ### 2. Run Locally with Virtual Environment
 ```bash
@@ -142,9 +123,6 @@ python -m venv venv
 source venv/bin/activate    # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
-# Run FastAPI
-uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
-
 # Run Streamlit
 streamlit run streamlit_app.py
 ```
@@ -153,7 +131,7 @@ streamlit run streamlit_app.py
 
 ## 🧪 Automated Testing & CI Pipeline
 
-Run all 21 unit tests locally:
+Run all unit tests locally:
 ```bash
 python -m unittest discover -s tests -p "test_*.py" -v
 ```
@@ -166,11 +144,7 @@ python -m unittest discover -s tests -p "test_*.py" -v
 Product-Demand-Forecasting/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                 # Automated GitHub Actions CI workflow (21 tests)
-├── api/
-│   ├── __init__.py
-│   ├── main.py                    # FastAPI REST microservice & serving layer
-│   └── schemas.py                 # Pydantic request/response schema validation
+│       └── ci.yml                 # Automated GitHub Actions CI workflow
 ├── data/
 │   ├── Product_Demand_main.csv    # Product historical demand records (1M+ rows)
 │   └── inventory.db               # SQLite database (purchases, invoices, inventory)
@@ -201,12 +175,11 @@ Product-Demand-Forecasting/
 │   ├── test_freight_inference.py  # Unit tests for freight model
 │   ├── test_invoice_inference.py  # Unit tests for invoice risk model
 │   ├── test_demand_inference.py   # Unit tests for demand model & lags
-│   ├── test_api.py                # Unit tests for FastAPI endpoints
 │   └── test_inference.py          # Integration tests
 ├── streamlit_app.py               # Root entrypoint for Streamlit Community Cloud
 ├── app.py                         # Root alias entrypoint
 ├── Dockerfile                     # Containerization blueprint
-├── docker-compose.yml             # Multi-container orchestration (FastAPI + Streamlit)
+├── docker-compose.yml             # Streamlit container orchestration
 ├── requirements.txt               # Dependencies
 ├── .gitignore                     # Git exclusion rules
 ├── RESUME_BULLETS.md              # CV / Resume & Interview talking points
