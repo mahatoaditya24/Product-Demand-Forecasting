@@ -15,6 +15,7 @@ ENV/
 
 # Nested repositories
 mobility-analytics-repo/
+bank-loan-analysis-repo/
 
 # OS generated files
 .DS_Store
